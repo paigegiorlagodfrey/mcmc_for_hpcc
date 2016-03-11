@@ -1,0 +1,23 @@
+#!/bin/bash
+#PBS -q production
+#PBS -N PaigeG_mcmc
+#PBS -l select=1:ncpus=1
+#PBS -l place=free
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+echo "Starting job..."
+date
+
+scp -r service100:/global/u/paige.giorla/synth_fit/ ./.
+scp -r service100:/global/u/paige.giorla/emcee/ ./.
+
+python ./synth_fit/mcmc_start_wrapper.py fit_models '0722-0540' 'bt_settl_2013' ./synth_fit/model_atmospheres_filledholes.db 1000 1000 fill_holes=False > mcmcoutput									
+
+date
+
+scp -r service100:./synth_fit_results/ /global/u/paige.giorla/synth_fit/"
+
+
+echo "Finished job!"
