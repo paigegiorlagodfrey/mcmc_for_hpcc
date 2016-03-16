@@ -19,10 +19,6 @@ def get_spectrum(shortname):
 	unc = file[i][0][0]
 	return [wavelength,flux,unc]
 
-def get_models(model_grid_name, model_grid_path, param_lims=[('teff',400,1600,50),('logg',3.5,5.5,0.5)], fill_holes=False):
-	## use model database																<---- NEEDS TO BE PUT ON HPCC
-	model_grid = mc.make_model_db(model_grid_name, model_grid_path,  param_lims=[('teff',400,1600,50),('logg',3.5,5.5,0.5)], fill_holes=False)
-	return model_grid
 	
 def fit_models(shortname, model_grid_name, model_grid_path, nwalkers, nsteps, param_lims=[('teff',400,1600,50),('logg',3.5,5.5,0.5)], fill_holes=False):
 	wavelength,flux,unc = get_spectrum(shortname)
@@ -31,9 +27,11 @@ def fit_models(shortname, model_grid_name, model_grid_path, nwalkers, nsteps, pa
 	f = flux * q.erg/q.AA/q.cm**2/q.s
 	u = unc * q.erg/q.AA/q.cm**2/q.s
 		
-	## get models
-	model_grid = get_models(model_grid_name, model_grid_path, param_lims=[('teff',400,1600,50),('logg',3.5,5.5,0.5)], fill_holes=False)
-	
+  ## get models                                                           
+	fb = open(model_grid_path,'rb')
+  model_grid = pickle.load(fb)
+	fb.close()
+		
 	## run mc.fit_spectrum and save result to file 				<---- NEEDS TO BE PUT ON HPCC
 	bdsamp = mc.fit_spectrum([w,f,u], model_grid, nwalkers, nsteps, object_name='{}'.format(shortname), log=False, plot=True, prnt=True, outfile=None)
  	## [array([w]),array([f])] of interp'd best fit model 
@@ -55,6 +53,6 @@ if __name__=="__main__":
  	fit_models(shortname, model_grid_name, model_grid_path, nwalkers, nsteps, param_lims=[('teff',400,1600,50),('logg',3.5,5.5,0.5)], fill_holes=False)
  	shortname = '0722-0540'
  	model_grid_name = 'bt_settl_2013'
- 	model_grid_path = './synth_fit/model_atmospheres_filledholes.db'
+ 	model_grid_path = './synth_fit/BTSettl_mcmc.pkl'
  	nwalkers = 1000
  	nsteps = 1000
