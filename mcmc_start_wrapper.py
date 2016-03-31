@@ -45,10 +45,11 @@ def fit_models(shortname, model_grid_name, model_grid_path, nwalkers, nsteps, pa
 	figure(1)
 	fig1 = plt.gcf()
 	fig1.savefig('/synth_fit_results/{}_{}'.format(model_grid_name,shortname)+'_triangle.eps')
+	fig1 = plt.clf()
 	figure(2)
 	fig2 = plt.gcf()
 	fig2.savefig('/synth_fit_results/{}_{}'.format(model_grid_name,shortname)+'_chains.eps')
-
+	fig2 = plt.clf()
 if __name__=="__main__":
  	fit_models(shortname, model_grid_name, model_grid_path, nwalkers, nsteps, param_lims=[('teff',400,1600,50),('logg',3.5,5.5,0.5)], fill_holes=False)
  	shortname = '0722-0540'
